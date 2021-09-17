@@ -11,7 +11,9 @@ func New() *echo.Echo {
 
 	// Middleware
 	e.GET("/user", controllers.GetUserController)
+	e.GET("/user/:id", controllers.GetSpecificUserController)
 	e.POST("/user", controllers.RegisterUserController)
+	e.DELETE("/user/:id", controllers.DeleteSpecificUserByID)
 
 	return e
 }
