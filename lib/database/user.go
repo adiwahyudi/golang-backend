@@ -41,7 +41,8 @@ func CreateUser(user model.User) (*model.User, error) {
 
 func UpdateUser(id int, user model.User) (*model.User, error) {
 
-	err := config.DB.Find(&user, id).Updates(&user).Error
+	var users model.User
+	err := config.DB.Find(&users, id).Updates(&user).Error
 	if err != nil {
 		return &model.User{}, err
 	}
