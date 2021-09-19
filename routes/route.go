@@ -7,13 +7,14 @@ import (
 )
 
 func New() *echo.Echo {
+
 	e := echo.New()
 
-	// Middleware
-	e.GET("/user", controllers.GetUserController)
+	e.GET("/user", controllers.GetAllUserController)
 	e.GET("/user/:id", controllers.GetSpecificUserController)
 	e.POST("/user", controllers.RegisterUserController)
-	e.DELETE("/user/:id", controllers.DeleteSpecificUserByID)
+	e.PUT("/user/:id", controllers.UpdateUserController)
+	e.DELETE("/user/:id", controllers.DeleteSpecificUserByIDController)
 
 	return e
 }

@@ -3,86 +3,88 @@ package controllers
 import (
 	"net/http"
 	"strconv"
-	"yukevent/config"
+	"yukevent/lib/database"
 	"yukevent/model"
 
 	"github.com/labstack/echo/v4"
 )
 
-// Find All User
-func GetUserController(c echo.Context) error {
-	var users []model.User
+func GetAllUserController(c echo.Context) error {
 
-	err := config.DB.Find(&users).Error
+	users, err := database.GetAllUser()
 
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, map[string]interface{}{
 			"message": err.Error(),
 		})
 	}
-	return c.JSON(http.StatusOK, map[string]interface{}{
-		"message": "get user success!",
-		"data":    users,
-	})
+	return c.JSON(http.StatusOK, newResponseArray(*users))
 }
 
-// Find 1 Specific User
 func GetSpecificUserController(c echo.Context) error {
-	var user []model.User
-
 	id, _ := strconv.Atoi(c.Param("id"))
 
-	err := config.DB.First(&user, id).Error
+	user, err := database.GetOneUserByID(id)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, map[string]interface{}{
-			"message": err.Error,
+			"message": err.Error(),
 		})
 	}
-	return c.JSON(http.StatusOK, map[string]interface{}{
-		"message": "get specific user success",
-		"data":    user,
-	})
+	return c.JSON(http.StatusOK, newResponse(*user))
 }
 
-// Create a User
 func RegisterUserController(c echo.Context) error {
 
-	user := model.User{}
+	var userReq RequestUser
 
-	c.Bind(&user)
+	c.Bind(&userReq)
 
-	err := config.DB.Save(&user).Error
+	result, err := database.CreateUser(userReq.toModel())
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, map[string]interface{}{
 			"message": err.Error(),
 		})
 	}
-	return c.JSON(http.StatusOK, map[string]interface{}{
-		"message": "create user success!",
-		"data":    user,
-	})
+	return c.JSON(http.StatusOK, newResponse(*result))
 }
 
-// Delete Spesific User
-func DeleteSpecificUserByID(c echo.Context) error {
+func UpdateUserController(c echo.Context) error {
 
-	user := model.User{}
+	var updateUserReq RequestUser
+
+	c.Bind(&updateUserReq)
 
 	id, _ := strconv.Atoi(c.Param("id"))
 
-	err := config.DB.Delete(&user, id).Error
+	result, err := database.UpdateUser(id, updateUserReq.toModel())
+
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, map[string]interface{}{
 			"message": err.Error(),
 		})
 	}
-	return c.JSON(http.StatusOK, map[string]interface{}{
-		"message": "delete succes!",
-	})
+	return c.JSON(http.StatusOK, newResponse(*result))
+
 }
 
-// Update Spesific User
+func DeleteSpecificUserByIDController(c echo.Context) error {
 
-// func UpdateSpesificUser(c echo.Context) error {
+	var user model.User
 
-// }
+	id, _ := strconv.Atoi(c.Param("id"))
+	_, errFind := database.GetOneUserByID(id)
+	_, err := database.DeleteUser(id, user)
+	if errFind != nil {
+		return c.JSON(http.StatusNotFound, map[string]interface{}{
+			"message": "not found",
+		})
+	}
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, map[string]interface{}{
+			"message": err.Error(),
+		})
+	}
+	return c.JSON(http.StatusInternalServerError, map[string]interface{}{
+		"message": "deleted",
+	})
+}
