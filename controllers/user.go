@@ -84,7 +84,20 @@ func DeleteSpecificUserByIDController(c echo.Context) error {
 			"message": err.Error(),
 		})
 	}
-	return c.JSON(http.StatusInternalServerError, map[string]interface{}{
+	return c.JSON(http.StatusOK, map[string]interface{}{
 		"message": "deleted",
 	})
+}
+
+func DeleteSoftController(c echo.Context) error {
+
+	users, err := database.DeleteSoft()
+
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, map[string]interface{}{
+			"message": err.Error(),
+		})
+	}
+	return c.JSON(http.StatusOK, newResponseArray(*users))
+
 }

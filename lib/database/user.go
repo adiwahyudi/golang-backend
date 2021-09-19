@@ -56,3 +56,15 @@ func DeleteUser(id int, user model.User) (*model.User, error) {
 	}
 	return &user, nil
 }
+
+func DeleteSoft() (*[]model.User, error) {
+
+	var users []model.User
+
+	err := config.DB.Unscoped().Find(&users).Error
+
+	if err != nil {
+		return &[]model.User{}, err
+	}
+	return &users, nil
+}

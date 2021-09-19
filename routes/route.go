@@ -15,6 +15,7 @@ func New() *echo.Echo {
 	e.POST("/user", controllers.RegisterUserController)
 	e.PUT("/user/:id", controllers.UpdateUserController)
 	e.DELETE("/user/:id", controllers.DeleteSpecificUserByIDController)
+	e.GET("/userDeleted", controllers.DeleteSoftController)
 
 	return e
 }
